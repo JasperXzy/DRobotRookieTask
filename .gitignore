@@ -1,0 +1,21 @@
+# External reference repository.
+/references/
+/release/
+
+# macOS metadata.
+.DS_Store
+**/.DS_Store
+
+# Python caches and local environments.
+__pycache__/
+*.py[cod]
+.venv/
+.venv-*/
+
+# PyInstaller intermediate output. Final binaries belong in /release/.
+/Task1/attachments/foxglove_bridge_client/build/
+/Task1/attachments/foxglove_bridge_client/dist/
+
+# Locally recorded training data.
+/Task1/output/*
+!/Task1/output/.gitkeep

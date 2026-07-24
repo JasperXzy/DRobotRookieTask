@@ -1,0 +1,21 @@
+# Foxglove Bridge address on rdk-x5.
+bridge_url: ws://100.95.29.93:8765
+
+cmd_vel_topic: /cmd_vel
+publish_rate_hz: 20
+
+# Task1 starts conservatively. Arrow keys adjust these values at runtime.
+linear: 0.30
+angular: 0.80
+delta: 0.10
+
+# These preserve the optional map/sign behavior of references/foxglove/src/
+# bridge_client.py. They are disabled for Task1 because Task1 only needs teleop.
+map_enabled: false
+map_topic: /map
+map_path: map.png
+map_width_m: 5.0
+
+signals_enabled: false
+sign_publish_topic: /sign_foxglove
+sign_subscribe_topic: /sign4return

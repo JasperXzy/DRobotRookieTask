@@ -1,0 +1,2 @@
+file_name,task,lap,direction,lighting,obstacle_layout,qr_visible,parking_result,duration_seconds,average_fps,resolution,success,notes
+task1_line_001.mp4,task1,1,clockwise,normal,standard,yes,not_applicable,,,,,

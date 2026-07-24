@@ -1,0 +1,4 @@
+websocket-client>=1.7,<2
+pynput>=1.7,<2
+PyYAML>=6,<7
+Pillow>=10,<13
