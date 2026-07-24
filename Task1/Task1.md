@@ -62,9 +62,17 @@ sudo apt install ros-humble-foxglove-bridge python3-opencv python3-numpy
 ```
 
 
-## 6. 阶段 A：建立基线
+## 6. 任务实施
 
-### A1. 进入工作空间
+下面按照“先确认摄像头、然后建立远程连接、最后采集数据”的
+顺序完成 Task1。每个阶段都应先达到完成标志，再进入下一阶段。
+
+### 阶段 A：建立摄像头基线
+
+本阶段先确认摄像头设备和三路图像话题正常，此时不启动底盘，也不进行遥操；
+目标是把图像链路单独验证清楚，避免后续将摄像头问题误判为网络或控制问题。
+
+#### A1. 进入工作空间
 
 ```bash
 cd ~/D_Robot/dev_ws
@@ -72,7 +80,7 @@ source /opt/tros/humble/setup.bash
 source install/setup.bash
 ```
 
-### A2. 确认摄像头设备
+#### A2. 确认摄像头设备
 
 ```bash
 v4l2-ctl --list-devices
@@ -83,7 +91,7 @@ v4l2-ctl --device=/dev/video0 --all
 仅提供 UVC metadata。
 
 
-### A3. 启动摄像头
+#### A3. 启动摄像头
 
 将附件复制到板端工作空间并重新编译：
 
@@ -119,7 +127,7 @@ ros2 topic hz /image_show
 - `/image_show` 稳定达到约 15 FPS，且不会明显拖慢 NV12 推理流。
 - 不再启动旧 `image_transport_node` 的 CPU NV12→BGR→JPEG 路径。
 
-### A4. 理解并评估摄像头配置
+#### A4. 理解并评估摄像头配置
 
 你需要在验收报告中解释：
 
@@ -129,9 +137,13 @@ ros2 topic hz /image_show
 - 为什么训练视频必须来自 `/image`，而不是低质量 `/image_show`。
 - `640x480 @ 30 FPS`、`1280x720 @ 30 FPS`、`1920x1080 @ 30 FPS` 对网络、CPU、VPU 和存储的影响。
 
-## 7. 阶段 B：Foxglove Bridge
+### 阶段 B：建立 Foxglove 远程连接
 
-### B1. 启动 Bridge
+Foxglove Bridge 把 ROS 2 话题转换成控制电脑可以访问的 WebSocket 数据。
+Foxglove Desktop 用于观察数据，`DRobotTeleop` 用于发布速度指令；两者通过
+同一个 Bridge 连接小车，但承担不同职责。
+
+#### B1. 启动 Bridge
 
 ```bash
 ros2 launch foxglove_bridge foxglove_bridge_launch.xml
@@ -144,7 +156,7 @@ ws://<小车IP>:8765
 ```
 
 
-### B2. 准备独立遥操客户端
+#### B2. 准备独立遥操客户端
 
 打开
 [JasperXzy/DRobotRookieTask Releases](https://github.com/JasperXzy/DRobotRookieTask/releases)，
@@ -190,7 +202,7 @@ bridge_url: ws://<小车IP>:8765
 源码和维护者打包说明保留在
 `attachments/foxglove_bridge_client/`，不属于新成员安装步骤。
 
-#### macOS 首次授权
+##### macOS 首次授权
 
 macOS 必须为当前构建出的 `DRobotTeleop` 同时开启：
 
@@ -203,7 +215,7 @@ macOS 必须为当前构建出的 `DRobotTeleop` 同时开启：
 `Terminal → Secure Keyboard Entry`，确保该选项没有勾选；安全键盘输入会
 阻止 `pynput` 取得按键。
 
-### B3. 导入布局
+#### B3. 导入布局
 
 在 Foxglove 的 Layouts 菜单选择 **Import from file**，导入：
 
@@ -216,7 +228,7 @@ attachments/foxglove_task1.json
 - Image 面板选择 `/image_show`。
 - Raw Messages 面板选择 `/odom`。
 
-### B4. 启动遥操
+#### B4. 启动遥操
 
 确认 rdk-x5 上的底盘和 Foxglove Bridge 已启动，然后直接双击对应平台的
 可执行程序。看到“已连接 Foxglove Bridge，`clientPublish/json` 可用”后，
@@ -236,15 +248,18 @@ attachments/foxglove_task1.json
 - 持续按住 WASD 不应在终端产生连续字符输出。
 
 
-## 8. 阶段 C：遥操安全测试
+### 阶段 C：完成遥操安全测试
 
-### C1. 启动底盘
+本阶段验证“指令是否正确”和“车辆能否可靠停车”，必须先架空车轮，再进行
+落地低速测试；不要把第一次键盘测试直接放到完整赛道中进行。
+
+#### C1. 启动底盘
 
 ```bash
 ros2 launch origincar_base origincar_bringup.launch.py
 ```
 
-### C2. 架空测试
+#### C2. 架空测试
 
 依次完成：
 
@@ -262,14 +277,18 @@ STM32 的 Ackermann 固件使用 `Vx/Vz` 计算前轮舵角；当
 `W+A`、`W+D`、`S+A` 或 `S+D` 组合键，base 驱动不会把单独 `A/D`
 自动改造成带速度的命令。
 
-### C3. 落地低速测试
+#### C3. 落地低速测试
 
 - 初始线速度不得超过 `0.3 m/s`。
 - 先完成直线、停车、S 弯，再进入完整赛道。
 
-## 9. 阶段 D：录制训练视频
+### 阶段 D：录制训练视频
 
-### D1. 启动录制
+MP4 保存实际图像，脚本生成的同名 JSON 保存分辨率、帧数、帧率和录制时间，
+`recording_manifest.csv` 则补充任务、方向、光照和路线等场景信息，三者共同
+构成可以交给 Task2 使用的一段训练数据。
+
+#### D1. 启动录制
 
 在本培训仓库根目录执行：
 
@@ -293,7 +312,7 @@ python3 Task1/scripts/record_camera_video.py \
 
 脚本会在视频旁生成同名 `.json` 元数据文件，记录图像尺寸、帧数、接收帧率、录制时间和源话题。
 
-### D2. 视频采集要求
+#### D2. 视频采集要求
 
 每次录制前清洁镜头并固定相机安装角度。至少采集：
 
@@ -310,23 +329,26 @@ python3 Task1/scripts/record_camera_video.py \
 
 每段视频都要登记到 `templates/recording_manifest.csv` 的副本中。
 
-## 10. 阶段 E：完整任务验收
+### 阶段 E：完成规定路线
+
+本阶段关注安全、路线完整和数据可用性，不比较驾驶速度，每次任务结束后立即
+确认视频、JSON 和清单记录完整，再开始下一次录制。
 
 人工驾驶依次完成：
 
-### 任务一
+#### 任务一
 
 - 完成巡线区域。
 - 正确绕过障碍物。
 - 到达二维码区域并保证二维码清晰入镜。
 
-### 任务二
+#### 任务二
 
 - 使用远程遥操完成规定路线。
 - 全程视频连续，无长时间卡顿或黑屏。
 - 轻微网络抖动后能够人工停车并恢复；突然断联不作为自动停车验收项。
 
-### 任务三
+#### 任务三
 
 - 完成巡线和避障路线。
 - 进入停车区域。
@@ -337,7 +359,9 @@ python3 Task1/scripts/record_camera_video.py \
 - 一段完整车载视频。
 - 问题与改进记录。
 
-## 11. 验收标准
+## 7. 验收与提交
+
+### 7.1 验收标准
 
 | 类别 | 验收项 | 通过条件 |
 | --- | --- | --- |
@@ -354,7 +378,7 @@ python3 Task1/scripts/record_camera_video.py \
 | 场地 | 完整任务 | 人工完成任务一、二、三并提交证据 |
 
 
-## 12. 快速检查
+### 7.2 快速检查
 
 摄像头、底盘和 Bridge 启动后，在 rdk-x5 上执行以下只读命令：
 
@@ -368,7 +392,21 @@ ros2 topic hz /image_hbmem
 ros2 topic hz /image_show
 ```
 
-## 13. 提交物
+### 7.3 学习总结与思考
+
+验收报告需要结合实际话题、视频和测试记录回答：
+
+1. `/image`、`/image_hbmem` 和 `/image_show` 分别服务于什么环节？为什么
+   不使用同一路图像完成训练、推理和远程预览？改变分辨率会怎样影响网络、
+   CPU、VPU 和存储？
+2. Foxglove Desktop、Foxglove Bridge 和 `DRobotTeleop` 分别承担什么职责？
+3. 为什么 Ackermann 小车单独按 `A/D` 不会原地转向？实际转向需要什么指令
+   组合？
+4. 为什么训练视频必须录制 `/image`，而不是 `/image_show`？
+5. MP4、同名 JSON 和 `recording_manifest.csv` 分别为 Task2 提供什么信息？
+6. 本次测试遇到了什么问题？如何定位、解决，并在下一次采集中避免？
+
+### 7.4 提交物
 
 成员提交以下内容：
 
@@ -379,7 +417,7 @@ Task1_submission_<组别>/
 ```
 
 
-## 14. 参考资料
+## 8. 相关资料
 
 - `attachments/foxglove_bridge_client/README.md`
 - `rdk-x5:/root/D_Robot/dev_ws/src/origincar/origincar_bringup/launch/usb_websocket_display.launch.py`
