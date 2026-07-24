@@ -1,0 +1,2 @@
+sample_id,video_id,frame_index,timestamp_ms,image_path,task,lap,direction,lighting,quality_status,x_roi,y_roi,x_norm,y_norm,has_track,annotation_status,reviewer,split,notes
+task1_line_001__f000090,task1_line_001,90,3000,frames/roi/task1_line_001__f000090.jpg,task1,1,clockwise,normal,accepted,,,,,,unlabeled,,,

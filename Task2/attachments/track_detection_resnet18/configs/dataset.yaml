@@ -1,0 +1,52 @@
+schema_version: 1
+status: final
+
+paths:
+  raw_dir: "Task2/data/raw"
+  full_frames_dir: "Task2/data/frames/full"
+  roi_frames_dir: "Task2/data/frames/roi"
+  annotations_dir: "Task2/data/annotations"
+  dataset_dir: "Task2/data/datasets/v1"
+  runs_dir: "Task2/runs"
+  exports_dir: "Task2/output"
+
+sampling:
+  sample_fps: 2.0
+  image_extension: ".jpg"
+  jpeg_quality: 95
+
+geometry:
+  source_width: 640
+  source_height: 480
+  roi_x: 0
+  roi_y: 256
+  roi_width: 640
+  roi_height: 224
+  resize_interpolation: bilinear
+
+annotation:
+  label_format: "x_roi y_roi state"
+  coordinate_storage: raw_roi_pixels
+  positive_state: 1
+  negative_state: 0
+  rejected_state: -1
+  lookahead_band_y_min: 80
+  lookahead_band_y_max: 144
+  require_explicit_status: true
+  missing_annotation_is_negative: false
+  legacy_two_value_normalized_labels: readable_not_written
+
+quality:
+  auto_reject: false
+  mark_blur: true
+  mark_underexposure: true
+  mark_overexposure: true
+  mark_near_duplicate: true
+
+split:
+  group_key: video_id
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seed: 42
+  freeze_test_before_training: true

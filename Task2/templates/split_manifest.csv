@@ -1,0 +1,2 @@
+video_id,recording_session,split,direction,lighting,task,frame_count,positive_count,negative_count,reason,locked
+task1_line_001,session_001,train,clockwise,normal,task1,,,,initial_group_split,false

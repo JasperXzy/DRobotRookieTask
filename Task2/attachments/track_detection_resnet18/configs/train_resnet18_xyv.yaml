@@ -1,0 +1,56 @@
+schema_version: 1
+status: final
+
+model:
+  architecture: resnet18
+  pretrained: true
+  output_size: 3
+  output_order: [x_norm, y_norm, track_logit]
+
+input:
+  width: 224
+  height: 224
+  channels: 3
+  color_format: RGB
+  layout: NCHW
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+training:
+  seed: 42
+  epochs: 100
+  batch_size: 32
+  num_workers: 4
+  optimizer: adamw
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  early_stopping_patience: 15
+  checkpoint_metric: val_total_loss
+
+loss:
+  coordinate: smooth_l1
+  coordinate_mask: "has_track == 1"
+  confidence: bce_with_logits
+  confidence_weight: 1.0
+
+augmentation:
+  horizontal_flip_probability: 0.0
+  vertical_flip_probability: 0.0
+  rotation_degrees: 0.0
+  brightness: 0.2
+  contrast: 0.2
+  saturation: 0.2
+  hue: 0.05
+  gaussian_blur_probability: 0.1
+
+evaluation:
+  confidence_threshold: 0.5
+  pixel_hit_thresholds: [10, 20, 30]
+  report_percentiles: [90, 95]
+
+export:
+  onnx_opset: 11
+  input_name: input
+  output_name: output
+  fixed_batch: 1
+  dynamic_axes: false

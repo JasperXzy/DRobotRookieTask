@@ -1,0 +1,2 @@
+video_id,file_name,metadata_file,sha256,task,lap,direction,lighting,obstacle_layout,camera_mount,width,height,fps,frame_count,duration_seconds,status,notes
+task1_line_001,task1_line_001.mp4,task1_line_001.json,,task1,1,clockwise,normal,standard,fixed,,,,,,pending,

@@ -19,3 +19,9 @@ __pycache__/
 # Locally recorded training data.
 /Task1/output/*
 !/Task1/output/.gitkeep
+
+# Task2 datasets, runs, and generated artifacts.
+/Task2/data/
+/Task2/runs/
+/Task2/output/*
+!/Task2/output/.gitkeep
