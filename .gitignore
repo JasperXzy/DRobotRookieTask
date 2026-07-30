@@ -2,6 +2,9 @@
 /references/
 /release/
 
+# Local OpenExplorer SDK, documentation, and offline images.
+/Downloads/
+
 # macOS metadata.
 .DS_Store
 **/.DS_Store
@@ -25,3 +28,10 @@ __pycache__/
 /Task2/runs/
 /Task2/output/*
 !/Task2/output/.gitkeep
+
+# Task3 calibration, conversion, model, logs, and local submission artifacts.
+/Task3/output/*
+!/Task3/output/.gitkeep
+/Task3/attachments/racing_track_detection/config/*.bin
+/Task3/attachments/racing_track_detection/config/*.onnx
+!/Task3/attachments/racing_track_detection/config/.gitkeep

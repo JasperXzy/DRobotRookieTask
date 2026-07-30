@@ -12,6 +12,7 @@ ROS 2 数据流、Foxglove 远程调试、人工遥操和训练数据采集，�
 | --- | --- | --- | --- |
 | Task1 | 摄像头、Foxglove 与人工遥操数据采集 | 已发布 | [开始 Task1](Task1/Task1.md) |
 | Task2 | 巡线数据集制作与 ResNet18 浮点模型训练 | 已发布 | [开始 Task2](Task2/Task2.md) |
+| Task3 | X5 OpenExplorer PTQ 量化、ROS 2 部署与 Foxglove 验证 | 已发布 | [开始 Task3](Task3/Task3.md) |
 
 Task1 配套的 macOS 和 Windows 遥操客户端请从
 [GitHub Releases](https://github.com/JasperXzy/DRobotRookieTask/releases)
@@ -43,6 +44,22 @@ Task2 使用 Task1 采集的 MP4 视频，在 WSL2 Ubuntu 22.04 Conda 环境中�
   数据处理与训练工具包
 
 Task2 的接口、数据契约和验收门槛以 [Task2/Task2.md](Task2/Task2.md) 为准。
+
+## Task3 概览
+
+Task3 接收 Task2 的冻结 ONNX 和数据集，在 WSL2 Ubuntu 的 X5 OpenExplorer
+v1.2.8 Docker 环境中完成：
+
+- 安装 WSL 原生 Docker Engine，并加载 OpenExplorer CPU 离线镜像
+- 检查 ONNX 契约与 X5 算子支持
+- 从 train/val 生成可追溯的 RGB float32 PTQ 校准集
+- 编译量化 ONNX 和 X5 BIN，并对比浮点/量化任务指标
+- 使用修正后的 `racing_track_detection` ROS 2 包进行板端 BPU 推理
+- 通过 `/racing_track_annotations` 在 Foxglove 中验证点位、置信度和时间同步
+
+Task3 只保留最终验收流程；train/val/test 任一划分缺少已审核正样本或负样本时，
+应返回 Task2 补充数据和重新训练。完整流程以 [Task3/Task3.md](Task3/Task3.md)
+为准。
 
 ## 主要环境
 

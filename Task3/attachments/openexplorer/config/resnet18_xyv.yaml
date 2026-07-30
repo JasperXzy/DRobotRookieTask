@@ -1,0 +1,30 @@
+model_parameters:
+  onnx_model: "/workspace/Task2/output/line_follower_resnet18.onnx"
+  march: "bayes-e"
+  layer_out_dump: false
+  working_dir: "/workspace/Task3/output/model_output"
+  output_model_file_prefix: "race_track_detection_224x224_nv12"
+
+input_parameters:
+  input_name: "input"
+  input_shape: "1x3x224x224"
+  input_type_rt: "nv12"
+  input_layout_rt: ""
+  input_space_and_range: "regular"
+  input_type_train: "rgb"
+  input_layout_train: "NCHW"
+  norm_type: "data_mean_and_scale"
+  mean_value: "123.675 116.28 103.53"
+  scale_value: "0.0171247538 0.0175070028 0.0174291939"
+
+calibration_parameters:
+  cal_data_dir: "/workspace/Task3/output/calibration_data_rgb_f32"
+  cal_data_type: "float32"
+  preprocess_on: false
+  calibration_type: "default"
+
+compiler_parameters:
+  compile_mode: "latency"
+  debug: false
+  optimize_level: "O3"
+  input_source: {"input": "pyramid"}
